@@ -1,0 +1,5 @@
+*cache*
+dist/
+*sqlite
+*db
+*egg-info

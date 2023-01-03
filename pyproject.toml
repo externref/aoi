@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "aoi"
+version = "0.1.0"
+description = "SQLITE3 CLI wrapper build on python."
+authors = ["sarthhh <shiva02939@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+colorama = "^0.4.6"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+isort = "^5.11.4"
+ruff = "^0.0.209"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
