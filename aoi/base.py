@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import sys
 
@@ -73,7 +75,7 @@ def main() -> None:
             "aoi\U0001f365  version: ",
             colorama.Fore.GREEN,
             colorama.Style.NORMAL,
-            "0.1.0\n",
+            "0.1.1\n",
             colorama.Fore.BLUE,
             colorama.Style.BRIGHT,
             "Python version: ",
