@@ -6,9 +6,11 @@ authors = ["sarthhh <shiva02939@gmail.com>"]
 license = "MIT License"
 readme = "README.md"
 
+[tool.poetry.scripts]
+aoi = "aoi.base:main"
+
 [tool.poetry.dependencies]
 python = "^3.8"
-colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
