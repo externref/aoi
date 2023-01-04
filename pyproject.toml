@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aoi"
-version = "0.1.1"
+version = "0.1.2"
 description = "SQLITE3 CLI wrapper build on python."
 authors = ["sarthhh <shiva02939@gmail.com>"]
 license = "MIT License"

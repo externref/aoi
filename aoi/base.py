@@ -82,7 +82,7 @@ def main() -> None:
             .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
             .write("\U0001f365 aoi version: ")
             .set_cursor(ANSI.NORMAL_FORMAT, ANSI.GREEN_TEXT)
-            .write("0.1.1", newline=True)
+            .write("0.1.2", newline=True)
             .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
             .write("\U0001f40d Python version: ")
             .set_cursor(ANSI.NORMAL_FORMAT, ANSI.GREEN_TEXT)
