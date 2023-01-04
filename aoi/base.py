@@ -3,10 +3,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-import colorama
-
-from aoi._misc import process_commands
-from aoi.sqlite import connect, run_sql
+from aoi.sqlite import Connection
+from aoi.utils import ANSI, ANSIBuilder, CommandHandler, error_print
 
 parser = argparse.ArgumentParser("aoi", usage="aoi *[options]", description="SQLITE3 in CLI.", add_help=True)
 
@@ -25,40 +23,50 @@ class Session:
 
     def __init__(self, file: str) -> None:
         self.file = file
+        self.cmd_handler = CommandHandler()
+        self.connection = Connection(file)
 
-        connect(file)
+    def print_welcome_message(self) -> None:
+        print(
+            ANSIBuilder()
+            .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
+            .write("Welcome to ")
+            .set_cursor(ANSI.CYAN_TEXT)
+            .write("\U0001f365 aoi")
+            .set_cursor(ANSI.BLUE_TEXT)
+            .write("!")
+            .set_cursor(ANSI.NORMAL_FORMAT)
+            .write(f" [connected to: \033[1;33m{self.file}\033[0m]", newline=True)
+            .set_cursor(ANSI.BLUE_TEXT)
+            .write("type :h for list of inbuilt commands.")
+        )
+
+    def print_end_message(self) -> None:
+        print(
+            ANSIBuilder()
+            .write("\n" if self.running else "")
+            .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
+            .write("Thank you for using ")
+            .set_cursor(ANSI.BOLD_FORMAT, ANSI.CYAN_TEXT)
+            .write("\U0001f365  aoi")
+            .set_cursor(ANSI.BLUE_TEXT)
+            .write("!")
+        )
 
     def start(self) -> None:
         self.running = True
-        print(
-            colorama.Fore.BLUE,
-            colorama.Style.BRIGHT,
-            "Welcome to ",
-            colorama.Fore.CYAN,
-            "\U0001f365 aoi",
-            colorama.Fore.BLUE,
-            "!",
-            colorama.Style.RESET_ALL,
-            f" [connected to: \033[1;33m{self.file}\033[0m]",
-            sep="",
-            end="\n",
-        )
-        print(
-            colorama.Fore.LIGHTBLUE_EX,
-            "type :h for list of inbuilt commands.",
-            colorama.Style.RESET_ALL,
-            sep="",
-        )
+        self.print_welcome_message()
+        self.connection.connect()
 
         while self.running is True:
             data = input("> ")
             if data.startswith(":"):
-                process_commands(data, self)
+                self.cmd_handler.process_command(data, self)
                 continue
             while not data.strip().endswith(";"):
                 data += f" {input('- ')}"
 
-            run_sql(data, self)
+            self.connection.run_sql(data, self)
         raise KeyboardInterrupt
 
     def stop(self) -> None:
@@ -70,33 +78,21 @@ def main() -> None:
     file = args.connect or ":memory:"
     if args.version and args.connect is None:
         print(
-            colorama.Fore.BLUE,
-            colorama.Style.BRIGHT,
-            "aoi\U0001f365  version: ",
-            colorama.Fore.GREEN,
-            colorama.Style.NORMAL,
-            "0.1.1\n",
-            colorama.Fore.BLUE,
-            colorama.Style.BRIGHT,
-            "Python version: ",
-            colorama.Style.NORMAL,
-            colorama.Fore.GREEN,
-            sys.version,
-            colorama.Style.RESET_ALL,
-            sep="",
+            ANSIBuilder()
+            .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
+            .write("\U0001f365 aoi version: ")
+            .set_cursor(ANSI.NORMAL_FORMAT, ANSI.GREEN_TEXT)
+            .write("0.1.1", newline=True)
+            .set_cursor(ANSI.BOLD_FORMAT, ANSI.BLUE_TEXT)
+            .write("\U0001f40d Python version: ")
+            .set_cursor(ANSI.NORMAL_FORMAT, ANSI.GREEN_TEXT)
+            .write(sys.version)
         )
+        return
+    if args.connect and args.version:
+        error_print("\u26a0\ufe0f  Only one operation allowed at a time.")
         return
     try:
         (session := Session(file)).start()
     except KeyboardInterrupt:
-        print(
-            "\n" if session.running else "",
-            colorama.Fore.BLUE,
-            colorama.Style.BRIGHT,
-            "Thank you for using ",
-            colorama.Fore.CYAN,
-            "\U0001f365 aoi",
-            colorama.Fore.BLUE,
-            "!",
-            sep="",
-        )
+        session.print_end_message()
